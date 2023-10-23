@@ -1,7 +1,7 @@
 # **Sorting-Time-Complexity-test**
 ## Description
 This program was designed to test the speed of various sorting algorithms using arrays of increasing sizes.
-The outer for loop will run for as many sizes of arrays are desired
+The outer for loop will run for as many sizes of arrays are desired.
 Each inner for loop generates an array of random integers of the current length and then calls a specific
 sorting algorithm including Radix Sort, Quick Sort, Merge Sort, Insertion Sort, and Bubble Sort. The time in
 nanoseconds is displayed after each sorting algorithm is run. Each algorithm will be called on five different
