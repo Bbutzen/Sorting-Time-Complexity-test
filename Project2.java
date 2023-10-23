@@ -1,60 +1,66 @@
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+
 
 public class Project2 {
+    /**
+     * This program was designed to test the speed of various sorting algorithms using arrays of increasing sizes.
+     * The outer for loop will run for as many sizes of arrays are desired
+     * Each inner for loop generates an array of random integers of the current length and then calls a specific
+     * sorting algorithm including Radix Sort, Quick Sort, Merge Sort, Insertion Sort, and Bubble Sort. The time in
+     * milliseconds is displayed after each sorting algorithm is run. Each algorithm will be called on five different
+     * arrays of the same size to get a decent sample size. After all five sorting methods are run on that
+     * size, the next size array is then run by each algorithm until completion.
+     */
+    public static void main(String[] args) {
+        final int NUM_RUNS = 5; //Number of times to run each sorting algorithm
+        int[] arraySizes = new int[]{10000, 50000, 100000, 500000, 1000000, 5000000};//Size of each array
+        int currentSize = 0; //Index of the size of the current array being tested
 
-    public static void main(String[] args) throws IOException {
-
-        int[] arraySizes = new int[]{10000, 50000, 100000, 500000, 1000000, 5000000};
-        int currentSize = 0;
-
-        for (int i = 0; i < arraySizes.length; i++) {
-            for (int j = 0; j < 5; j++) {
-                int[] radixList = new int[arraySizes[currentSize]];
-                for (int k = 0; k < arraySizes[currentSize]; k++)
-                    radixList[k] = (int) (Math.random() * Integer.MAX_VALUE);
-                long startTime = getTime();
-                radixSort(radixList, 10);
-                long stopTime = getTime();
-                System.out.println("Radix Sort " + arraySizes[currentSize] + ": " + (stopTime - startTime) + " ms");
+        for (int i = 0; i < arraySizes.length; i++) {//run the sorting algorithms for each array size
+            /*
+             * Since we care more about the time associated with each algorithm, the
+             * sorting algorithms return the run time instead of the sorted array.
+             */
+            //Begin the radix sort
+            System.out.println("Radix Sort " + arraySizes[currentSize] + ":");
+            for (int j = 0; j < NUM_RUNS; j++) {
+                int[] radixList = new int[arraySizes[currentSize]];//generate an empty array of current size
+                for (int k = 0; k < arraySizes[currentSize]; k++)//generate the random numbers and place into array
+                    radixList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
+                //call the radix sort method and get the run time
+                long runTime = radixSort(radixList);//9 is the number of digits in max int value
+                System.out.println(runTime + " nanoseconds");
             }
-            for (int j = 0; j < 5; j++) {
+            System.out.println("Quick Sort " + arraySizes[currentSize] + ":");
+            for (int j = 0; j < NUM_RUNS; j++) {
                 int[] quickList = new int[arraySizes[currentSize]];
                 for (int k = 0; k < arraySizes[currentSize]; k++)
-                    quickList[k] = (int) (Math.random() * Integer.MAX_VALUE);
-                long startTime = getTime();
-                quickSort(quickList, 0, arraySizes[currentSize] - 1);
-                long stopTime = getTime();
-                System.out.println("Quick Sort " + arraySizes[currentSize] + ": " + (stopTime - startTime) + " ms");
+                    quickList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
+                long runTime = quickSort(quickList, 0, arraySizes[currentSize] - 1);
+                System.out.println(runTime + " nanoseconds");
             }
-            for (int j = 0; j < 5; j++) {
+            System.out.println("Merge Sort " + arraySizes[currentSize] + ":");
+            for (int j = 0; j < NUM_RUNS; j++) {
                 int[] mergeList = new int[arraySizes[currentSize]];
                 for (int k = 0; k < arraySizes[currentSize]; k++)
-                    mergeList[k] = (int) (Math.random() * Integer.MAX_VALUE);
-                long startTime = getTime();
-                mergeSort(mergeList);
-                long stopTime = getTime();
-                System.out.println("Merge Sort " + arraySizes[currentSize] + ": " + (stopTime - startTime) + " ms");
+                    mergeList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
+                long runTime = mergeSort(mergeList);
+                System.out.println(runTime + " nanoseconds");
             }
-            for (int j = 0; j < 5; j++) {
+            System.out.println("Insertion Sort " + arraySizes[currentSize] + ":");
+            for (int j = 0; j < NUM_RUNS; j++) {
                 int[] insertList = new int[arraySizes[currentSize]];
                 for (int k = 0; k < arraySizes[currentSize]; k++)
-                    insertList[k] = (int) (Math.random() * Integer.MAX_VALUE);
-                long startTime = getTime();
-                insertionSort(insertList);
-                long stopTime = getTime();
-                System.out.println("Insertion Sort " + arraySizes[currentSize] + ": " + (stopTime - startTime) + " ms");
+                    insertList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
+                long runTime = insertionSort(insertList);
+                System.out.println(runTime + " nanoseconds");
             }
-            for (int j = 0; j < 5; j++) {
-
+            System.out.println("Bubble Sort " + arraySizes[currentSize] + ":");
+            for (int j = 0; j < NUM_RUNS; j++) {
                 int[] bubbleList = new int[arraySizes[currentSize]];
                 for (int k = 0; k < arraySizes[currentSize]; k++)
-                    bubbleList[k] = (int) (Math.random() * Integer.MAX_VALUE);
-                long startTime = getTime();
-                bubbleSort(bubbleList);
-                long stopTime = getTime();
-                System.out.println("Bubble Sort " + arraySizes[currentSize] + ": " + (stopTime - startTime) + " ms");
+                    bubbleList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
+                long runTime = bubbleSort(bubbleList);
+                System.out.println(runTime + " nanoseconds");
             }
             currentSize++;
         }
@@ -62,9 +68,10 @@ public class Project2 {
 
 
     public static long getTime() {
-        return System.currentTimeMillis();
+        return System.nanoTime();
     }
-    public static void insertionSort(int[] list){
+    public static long insertionSort(int[] list){
+        long startTime = getTime();
         for(int i = 1; i < list.length; i++){
             int current = list[i];
             int j;
@@ -73,10 +80,13 @@ public class Project2 {
             }
             list[j+1] = current;
         }
+        long stopTime = getTime();
+        return stopTime-startTime;
     }
 
-    public static void bubbleSort(int[] list){
+    public static long bubbleSort(int[] list){
         boolean nextpassflag = true;
+        long startTime = getTime();
         for(int j = 1; j< list.length && nextpassflag; j++){
             nextpassflag = false;
             for(int i = 0; i < list.length-j; i++){
@@ -88,9 +98,12 @@ public class Project2 {
                 }
             }
         }
+        long stopTime = getTime();
+        return stopTime - startTime;
     }
 
-    public static void mergeSort(int[] list) {
+    public static long mergeSort(int[] list) {
+        long startTime = getTime();
         if (list.length > 1) {
             // Merge sort the first half
             int[] firstHalf = new int[list.length / 2];
@@ -107,6 +120,8 @@ public class Project2 {
             // Merge firstHalf with secondHalf into list
             merge(firstHalf, secondHalf, list);
         }
+        long stopTIme = getTime();
+        return stopTIme - startTime;
     }
     public static void merge(int[] list1, int[] list2, int[] temp) {
         int current1 = 0; // Current index in list1
@@ -127,12 +142,15 @@ public class Project2 {
             temp[current3++] = list2[current2++];
     }
 
-    private static void quickSort(int[] list, int first, int last) {
+    private static long quickSort(int[] list, int first, int last) {
+        long startTime = getTime();
         if (last > first) {
             int pivotIndex = partition(list, first, last);
             quickSort(list, first, pivotIndex - 1);
             quickSort(list, pivotIndex + 1, last);
         }
+        long stopTime = getTime();
+        return stopTime - startTime;
     }
     /** Partition the array list[first..last] */
     private static int partition(int[] list, int first, int last) {
@@ -167,31 +185,31 @@ public class Project2 {
     }
 
     //counting sort algorithm to sort elements into correct "buckets"
-    public static void radixSort(int[] list, int numberOfDigits) {
-        java.util.ArrayList<Integer>[] buckets = new java.util.ArrayList[10];
-        for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new java.util.ArrayList<Integer>();
-        }
+    public static long radixSort(int[] a) {
+        long startTime = getTime();
+        {
+            int i, m = a[0], exp = 1, n = a.length;
+            int[] b = new int[n];
+            for (i = 1; i < n; i++)
+                if (a[i] > m)
+                    m = a[i];
+            while (m / exp > 0)
+            {
+                int[] bucket = new int[10];
 
-        for (int position = 0; position <= numberOfDigits; position++) {
-            // Clear buckets
-            for (int i = 0; i < buckets.length; i++) {
-                buckets[i].clear();
-            }
-
-            // Distribute the elements from list to buckets
-            for (int i = 0; i < list.length; i++) {
-                int key = getKey(list[i], position);
-                buckets[key].add(list[i]);
-            }
-
-            // Now move the elements from the buckets back to list
-            int k = 0; // k is an index for list
-            for (int i = 0; i < buckets.length; i++) {
-                for (int j = 0; j < buckets[i].size(); j++)
-                    list[k++] = buckets[i].get(j);
+                for (i = 0; i < n; i++)
+                    bucket[(a[i] / exp) % 10]++;
+                for (i = 1; i < 10; i++)
+                    bucket[i] += bucket[i - 1];
+                for (i = n - 1; i >= 0; i--)
+                    b[--bucket[(a[i] / exp) % 10]] = a[i];
+                for (i = 0; i < n; i++)
+                    a[i] = b[i];
+                exp *= 10;
             }
         }
+        long stopTime = getTime();
+        return stopTime - startTime;
     }
 
     /** Return the digit at the specified position.
