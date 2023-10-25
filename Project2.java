@@ -1,12 +1,10 @@
-
-
 public class Project2 {
     /**
      * This program was designed to test the speed of various sorting algorithms using arrays of increasing sizes.
      * The outer for loop will run for as many sizes of arrays are desired
      * Each inner for loop generates an array of random integers of the current length and then calls a specific
      * sorting algorithm including Radix Sort, Quick Sort, Merge Sort, Insertion Sort, and Bubble Sort. The time in
-     * milliseconds is displayed after each sorting algorithm is run. Each algorithm will be called on five different
+     * nanoseconds is displayed after each sorting algorithm is run. Each algorithm will be called on five different
      * arrays of the same size to get a decent sample size. After all five sorting methods are run on that
      * size, the next size array is then run by each algorithm until completion.
      */
@@ -16,60 +14,65 @@ public class Project2 {
         int currentSize = 0; //Index of the size of the current array being tested
 
         for (int i = 0; i < arraySizes.length; i++) {//run the sorting algorithms for each array size
-            /*
-             * Since we care more about the time associated with each algorithm, the
-             * sorting algorithms return the run time instead of the sorted array.
-             */
-            //Begin the radix sort
-            System.out.println("Radix Sort " + arraySizes[currentSize] + ":");
-            for (int j = 0; j < NUM_RUNS; j++) {
-                int[] radixList = new int[arraySizes[currentSize]];//generate an empty array of current size
-                for (int k = 0; k < arraySizes[currentSize]; k++)//generate the random numbers and place into array
-                    radixList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
-                //call the radix sort method and get the run time
-                long runTime = radixSort(radixList);//9 is the number of digits in max int value
-                System.out.println(runTime + " nanoseconds");
+
+            //Call the sort method running once for each sorting algorithm (repetition is handled in the method)
+            for (int currentSort = 0; currentSort < 5; currentSort++) {
+                sort(arraySizes[currentSize], currentSort, NUM_RUNS);
             }
-            System.out.println("Quick Sort " + arraySizes[currentSize] + ":");
-            for (int j = 0; j < NUM_RUNS; j++) {
-                int[] quickList = new int[arraySizes[currentSize]];
-                for (int k = 0; k < arraySizes[currentSize]; k++)
-                    quickList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
-                long runTime = quickSort(quickList, 0, arraySizes[currentSize] - 1);
-                System.out.println(runTime + " nanoseconds");
-            }
-            System.out.println("Merge Sort " + arraySizes[currentSize] + ":");
-            for (int j = 0; j < NUM_RUNS; j++) {
-                int[] mergeList = new int[arraySizes[currentSize]];
-                for (int k = 0; k < arraySizes[currentSize]; k++)
-                    mergeList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
-                long runTime = mergeSort(mergeList);
-                System.out.println(runTime + " nanoseconds");
-            }
-            System.out.println("Insertion Sort " + arraySizes[currentSize] + ":");
-            for (int j = 0; j < NUM_RUNS; j++) {
-                int[] insertList = new int[arraySizes[currentSize]];
-                for (int k = 0; k < arraySizes[currentSize]; k++)
-                    insertList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
-                long runTime = insertionSort(insertList);
-                System.out.println(runTime + " nanoseconds");
-            }
-            System.out.println("Bubble Sort " + arraySizes[currentSize] + ":");
-            for (int j = 0; j < NUM_RUNS; j++) {
-                int[] bubbleList = new int[arraySizes[currentSize]];
-                for (int k = 0; k < arraySizes[currentSize]; k++)
-                    bubbleList[k] = (int) (Math.random() * Integer.MAX_VALUE + 1);
-                long runTime = bubbleSort(bubbleList);
-                System.out.println(runTime + " nanoseconds");
-            }
-            currentSize++;
+            currentSize++;//go to the next sized array
         }
     }
 
-
+    /**
+     * The sort method handles the calling and output of the results for each sorting algorithm. The outer loop will be
+     * run for as many times as the numRuns parameter. The array with random integers is created, and then in the
+     * switch/case the specific sorting method is called in the output statement.
+     * @param size The current size of the array being sorted.
+     * @param sortNumber The numeric representation for which sort method to call 0-Radix, 1-Quick, ...
+     * @param numRuns The pre-defined number of times that each sort should be run.
+     */
+    public static void sort(int size, int sortNumber, int numRuns) {
+        for (int i = 0; i < numRuns; i++){
+            int[] array = new int [size];
+            for (int j = 0; j < size; j++)
+                array[j] = (int) (Math.random() * Integer.MAX_VALUE + 1);
+            switch (sortNumber) {
+                case 0 -> {
+                    System.out.println("Radix Sort " + size + ": "+ radixSort(array) + " ns.");
+                }
+                case 1 -> {
+                    System.out.println("Quick Sort " + size + ": " + quickSort(array, 0, size - 1) + " ns.");
+                }
+                case 2 -> {
+                    System.out.println("Merge Sort " + size + ": " + mergeSort(array) + " ns.");
+                }
+                case 3 -> {
+                    System.out.println("Insertion Sort" + size + ": " + insertionSort(array) + " ns.");
+                }
+                case 4 -> {
+                    System.out.println("Bubble Sort " + size + ": " + bubbleSort(array) + " ns.");
+                }
+            }
+        }
+    }
+    /**
+     * The getTime method returns the time in nanoseconds to help determine how long the sort took
+     * @return The time in nanoseconds
+     */
     public static long getTime() {
         return System.nanoTime();
     }
+    /*
+     * Since we care more about the time associated with each algorithm, the
+     * sorting algorithms return the run time instead of the sorted array.
+     */
+    /**
+     * The insertionSort method performs the Insertion sort algorithm on the provided array and returns the difference in
+     * the start and stop times returned from the getTime method. The Insertion sort has a time complexity of O(n^2), and
+     * it performs it by moving the element to the required position shifting any elements that need to be shifted.
+     * @param list The array to be sorted
+     * @return The time taken to sort the array (default is in nanoseconds)
+     */
     public static long insertionSort(int[] list){
         long startTime = getTime();
         for(int i = 1; i < list.length; i++){
@@ -84,17 +87,25 @@ public class Project2 {
         return stopTime-startTime;
     }
 
+    /**
+     * Thr bubbleSort method performs the Bubble sort algorithm on the provided array and returns the difference in the
+     * start and stop times returned from the getTime method. The Bubble sort has a time complexity of O(n^2), and it
+     * performs it by examining each neighboring element and switching them if needed. The larger numbers will "rise" to
+     * the end of the array like a bubble would.
+     * @param list The array to be sorted
+     * @return The time taken to sort the array (default is in nanoseconds)
+     */
     public static long bubbleSort(int[] list){
-        boolean nextpassflag = true;
+        boolean nextPassflag = true;
         long startTime = getTime();
-        for(int j = 1; j< list.length && nextpassflag; j++){
-            nextpassflag = false;
+        for(int j = 1; j< list.length && nextPassflag; j++){
+            nextPassflag = false;
             for(int i = 0; i < list.length-j; i++){
                 if(list[i] > list[i+1]){
                     int temp = list[i];
                     list[i] = list[i+1];
                     list[i+1] = temp;
-                    nextpassflag = true;
+                    nextPassflag = true;
                 }
             }
         }
@@ -102,6 +113,14 @@ public class Project2 {
         return stopTime - startTime;
     }
 
+    /**
+     * The mergeSort method performs the Merge sort algorithm on the provided array and returns the difference in the
+     * start and stop times returned from the getTime method. The Merge sort has a time complexity of (n logn), and it
+     * performs it by dividing the array into smaller sub arrays and then merging them using the merge method in the c
+     * sorted order
+     * @param list The array to be sorted
+     * @return The time taken to sort the array (default is nanoseconds)
+     */
     public static long mergeSort(int[] list) {
         long startTime = getTime();
         if (list.length > 1) {
@@ -123,6 +142,13 @@ public class Project2 {
         long stopTIme = getTime();
         return stopTIme - startTime;
     }
+
+    /**
+     * THe merge method assists the mergeSort method by merging the two sub-arrays in the proper order
+     * @param list1 The first sub-array to be merged
+     * @param list2 The second sub-array to be merged
+     * @param temp The sorted array that the other two will be merged into
+     */
     public static void merge(int[] list1, int[] list2, int[] temp) {
         int current1 = 0; // Current index in list1
         int current2 = 0; // Current index in list2
@@ -142,6 +168,17 @@ public class Project2 {
             temp[current3++] = list2[current2++];
     }
 
+    /**
+     * The quickSort method performs the Quicksort algorithm on the provided array and returns the difference in the
+     * start and stop time returned by the getTime method. The Quicksort algorithm has a time complexity of O(n logn),
+     * and it performs the sort by using the partition method to create a pivot and divide the array into two arrays
+     * with one containing elements less than the pivot, and the other containing elements that are greater than the
+     * pivot. This is performed recursively until the entire list is sorted.
+     * @param list The array to be sorted
+     * @param first The index for the forward search (initialized at 0)
+     * @param last The index for the backwards search (initialized at length -1)
+     * @return The time taken to sort the array (default is in nanoseconds).
+     */
     private static long quickSort(int[] list, int first, int last) {
         long startTime = getTime();
         if (last > first) {
@@ -184,42 +221,42 @@ public class Project2 {
         }
     }
 
-    //counting sort algorithm to sort elements into correct "buckets"
-    public static long radixSort(int[] a) {
+    /**
+     * The radixSort method performs the Radix sort algorithm on the provided array and returns the difference in start
+     * time and stop time returned by the getTime method. The Radix sort has a time complexity of O(n), and it performs
+     * the sort by sorting the array into "buckets", and it performs the sort for as many digits are in the largest
+     * element in the array.
+     * @param list The array to be sorted.
+     * @return The time taken to sort the array (default is in nanoseconds).
+     */
+
+    public static long radixSort(int[] list) {
         long startTime = getTime();
         {
-            int i, m = a[0], exp = 1, n = a.length;
+            // i is a counter, max is the largest element, n is the size of the array
+            int i, max = list[0], exp = 1, n = list.length;
             int[] b = new int[n];
             for (i = 1; i < n; i++)
-                if (a[i] > m)
-                    m = a[i];
-            while (m / exp > 0)
+                if (list[i] > max)
+                    max = list[i];
+            while (max / exp > 0)
             {
+                //make the 10 buckets
                 int[] bucket = new int[10];
 
                 for (i = 0; i < n; i++)
-                    bucket[(a[i] / exp) % 10]++;
+                    bucket[(list[i] / exp) % 10]++;
                 for (i = 1; i < 10; i++)
                     bucket[i] += bucket[i - 1];
                 for (i = n - 1; i >= 0; i--)
-                    b[--bucket[(a[i] / exp) % 10]] = a[i];
+                    b[--bucket[(list[i] / exp) % 10]] = list[i];
                 for (i = 0; i < n; i++)
-                    a[i] = b[i];
+                    list[i] = b[i];
                 exp *= 10;
             }
         }
         long stopTime = getTime();
         return stopTime - startTime;
-    }
-
-    /** Return the digit at the specified position.
-     * The last digit's position is 0. */
-    public static int getKey(int number, int position) {
-        int result = 1;
-        for (int i = 0; i < position; i++)
-            result *= 10;
-
-        return (number / result) % 10;
     }
 }
 
